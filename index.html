@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Balkonkraftwerk Rechner</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+    
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 300px;
+        }
+    
+        h1 {
+            margin-bottom: 20px;
+        }
+    
+        input {
+            width: 90%;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+    
+        button {
+            background: #2e86de;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+    
+        button:hover {
+            background: #1b4f72;
+        }
+    
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>☀️ Was bringt das kleine Kraftwerk?</h1>
+
+        <p>Leistung (Watt):</p>
+        <input type="number" id="power" placeholder="z.B. 800">
+        <p>Sonnenstunden pro Tag:</p>
+        <input type="number" id="sun" placeholder="z.B. 5">
+        <p>Wirkungsgrad (%):</p>
+        <input type="number" id="eff" placeholder="z.B. 80">
+        <button onclick="calculate()">Berechnen</button>
+        <div id="result"></div>
+        <canvas id="chart" width="300" height="200"></canvas>
+
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+            let chart;
+            function calculate() {
+                let power = document.getElementById("power").value;
+                let sun = document.getElementById("sun").value;
+                let efficiency = document.getElementById("eff").value;
+            
+                if (!power || !sun || !efficiency) {
+                    document.getElementById("result").innerText = "Bitte alle Felder ausfüllen!";
+                    return;
+                }
+            
+                let daily = (power * sun * (efficiency / 100)) / 1000;
+                let yearly = daily * 365;
+            
+                document.getElementById("result").innerText =
+                    "Tagesertrag: " + daily.toFixed(2) + " kWh | Jahresertrag: " + yearly.toFixed(0) + " kWh";
+            
+                let monthly = Array(12).fill(yearly / 12);
+            
+                let ctx = document.getElementById("chart").getContext("2d");
+            
+                if (chart) {
+                    chart.destroy();
+                }
+            
+                chart = new Chart(ctx, {
+                    type: "bar",
+                    data: {
+                        labels: ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"],
+                        datasets: [{
+                            label: "Monatsertrag (kWh)",
+                            data: monthly
+                        }]
+                    }
+                });
+            }
+        </script>
+    </div>
+</body>
+</html>
