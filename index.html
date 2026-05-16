@@ -90,7 +90,13 @@
                 document.getElementById("result").innerText =
                     "Tagesertrag: " + daily.toFixed(2) + " kWh | Jahresertrag: " + yearly.toFixed(0) + " kWh";
             
-                let monthly = Array(12).fill(yearly / 12);
+                let factors = [0.02, 0.04, 0.09, 0.14, 0.18, 0.20, 0.21, 0.18, 0.12, 0.07, 0.03, 0.02];
+
+                // Summe der Faktoren berechnen
+                let sum = factors.reduce((a, b) => a + b, 0);
+
+                // Monatswerte berechnen
+                let monthly = factors.map(f => (yearly * f) / sum); 
             
                 let ctx = document.getElementById("chart").getContext("2d");
             
