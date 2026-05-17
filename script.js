@@ -1,5 +1,36 @@
 let chart;
 
+function getLocation() {
+
+    if (!navigator.geolocation) {
+
+        alert("Geolocation wird nicht unterstützt.");
+        return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+        success,
+        error
+    );
+}
+
+function success(position) {
+
+    let lat = position.coords.latitude;
+    let lon = position.coords.longitude;
+
+    document.getElementById("lat").value =
+        lat.toFixed(5);
+
+    document.getElementById("lon").value =
+        lon.toFixed(5);
+}
+
+function error() {
+
+    alert("Standort konnte nicht ermittelt werden.");
+}
+
 document.getElementById("calculateButton").addEventListener("click", calculate);
 
 async function calculate() {

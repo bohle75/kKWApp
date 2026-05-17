@@ -18,6 +18,9 @@
         <input type="number" id="lat" placeholder="z.B. 49.35" step="0.01">
         <p>Längengrad:</p>
         <input type="number" id="lon" placeholder="z.B. 8.14" step="0.01">
+        <button onclick="getLocation()">
+            Standort automatisch erkennen
+        </button>
         <button id="calculateButton">Berechnen</button>
         <div id="result"></div>
         <canvas id="chart" width="360" height="220"></canvas>
