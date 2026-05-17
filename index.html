@@ -3,68 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Balkonkraftwerk Rechner</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f6f8;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 24px;
-            box-sizing: border-box;
-        }
-    
-        .container {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            text-align: center;
-            width: min(420px, 100%);
-        }
-    
-        h1 {
-            margin-bottom: 20px;
-        }
-    
-        input {
-            width: 90%;
-            padding: 10px;
-            margin: 8px 0;
-            border-radius: 8px;
-            border: 1px solid #ccc;
-            font-size: 16px;
-        }
-    
-        button {
-            background: #2e86de;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-    
-        button:hover {
-            background: #1b4f72;
-        }
-    
-        #result {
-            margin-top: 20px;
-            font-size: 18px;
-            font-weight: bold;
-            line-height: 1.4;
-        }
-
-        #chart {
-            margin-top: 20px;
-            width: 100%;
-            max-width: 360px;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
@@ -79,88 +18,12 @@
         <input type="number" id="lat" placeholder="z.B. 49.35" step="0.01">
         <p>Längengrad:</p>
         <input type="number" id="lon" placeholder="z.B. 8.14" step="0.01">
-        <button id="calculateButton" onclick="calculate()">Berechnen</button>
+        <button id="calculateButton">Berechnen</button>
         <div id="result"></div>
         <canvas id="chart" width="360" height="220"></canvas>
-
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <script>
-            let chart;
-            async function calculate() {
-                let power = Number(document.getElementById("power").value);
-                let efficiency = Number(document.getElementById("eff").value);
-                let lat = Number(document.getElementById("lat").value);
-                let lon = Number(document.getElementById("lon").value);
-                let result = document.getElementById("result");
-                let button = document.getElementById("calculateButton");
-            
-                if (!power || !efficiency || !lat || !lon) {
-                    result.innerText = "Bitte alle Felder ausfüllen!";
-                    return;
-                }
-
-                result.innerText = "Sonnendaten werden geladen ...";
-                button.disabled = true;
-
-                try {
-                    let url =
-                        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=sunshine_duration&timezone=auto`;
-
-                    let response = await fetch(url);
-
-                    if (!response.ok) {
-                        throw new Error("API nicht erreichbar");
-                    }
-
-                    let data = await response.json();
-                    let sunshine = data.daily.sunshine_duration;
-
-                    if (!sunshine || sunshine.length === 0) {
-                        throw new Error("Keine Sonnendaten gefunden");
-                    }
-            
-                    let avgSun =
-                        sunshine.reduce((a, b) => a + b, 0) / sunshine.length / 3600;
-
-                    let daily = (power * avgSun * (efficiency / 100)) / 1000;
-                    let yearly = daily * 365;
-            
-                    result.innerText =
-                        "Ø Sonnenstunden: " + avgSun.toFixed(2) + " h | Tagesertrag: " +
-                        daily.toFixed(2) + " kWh | Jahresertrag: " + yearly.toFixed(0) + " kWh";
-            
-                    let factors = [0.02, 0.04, 0.09, 0.14, 0.18, 0.20, 0.21, 0.18, 0.12, 0.07, 0.03, 0.02];
-
-                    // Summe der Faktoren berechnen
-                    let sum = factors.reduce((a, b) => a + b, 0);
-
-                    // Monatswerte berechnen
-                    let monthly = factors.map(f => (yearly * f) / sum); 
-            
-                    let ctx = document.getElementById("chart").getContext("2d");
-            
-                    if (chart) {
-                        chart.destroy();
-                    }
-            
-                    chart = new Chart(ctx, {
-                        type: "bar",
-                        data: {
-                            labels: ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"],
-                            datasets: [{
-                                label: "Monatsertrag (kWh)",
-                                data: monthly.map(v => v.toFixed(1))
-                            }]
-                        }
-                    });
-                } catch (error) {
-                    result.innerText =
-                        "Die Sonnendaten konnten nicht geladen werden. Bitte Standort prüfen und später erneut versuchen.";
-                } finally {
-                    button.disabled = false;
-                }
-            }
-        </script>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
